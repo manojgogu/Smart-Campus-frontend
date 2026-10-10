@@ -40,7 +40,9 @@ export default function Register() {
       toast.success(`Account created. Welcome, ${d.user.name}!`);
       nav(d.user.role === 'security' ? '/security' : '/dashboard');
     } catch (e2) {
-      const m = e2.response?.data?.message || 'Registration failed.';
+      const m = e2.response?.data?.message || (e2.request
+        ? 'Cannot reach the CampusSafe API at localhost:5000. Start the Spring Boot backend and MongoDB, then try again.'
+        : 'Registration failed. Please try again.');
       setErr(m); toast.error(m);
     } finally { setBusy(false); }
   };

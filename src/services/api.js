@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  // Use Vite's same-origin proxy by default so browser CORS and host/port changes
+  // cannot silently prevent API requests from reaching Spring Boot.
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   timeout: 15000
 });
 
