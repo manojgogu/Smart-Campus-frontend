@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShieldCheck, Eye, EyeOff, Loader2, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -16,7 +16,8 @@ function strength(pw) {
 }
 
 export default function Register() {
-  const [form, setForm] = useState({ name: '', email: '', password: '', phone: '', role: 'student' });
+  const [searchParams] = useSearchParams();
+  const [form, setForm] = useState(() => ({ name: '', email: searchParams.get('email') || '', password: '', phone: '', role: 'student' }));
   const [show, setShow] = useState(false);
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
@@ -41,7 +42,7 @@ export default function Register() {
       nav(d.user.role === 'security' ? '/security' : '/dashboard');
     } catch (e2) {
       const m = e2.response?.data?.message || (e2.request
-        ? 'Cannot reach the CampusSafe API at localhost:5000. Start the Spring Boot backend and MongoDB, then try again.'
+        ? 'Cannot reach the CampusSafe API. Make sure the Spring Boot backend and PostgreSQL database are running, then try again.'
         : 'Registration failed. Please try again.');
       setErr(m); toast.error(m);
     } finally { setBusy(false); }

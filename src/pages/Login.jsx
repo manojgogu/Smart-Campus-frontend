@@ -27,7 +27,12 @@ export default function Login() {
       toast.success(`Welcome back, ${d.user.name}!`);
       nav(d.user.role === 'admin' ? '/admin' : d.user.role === 'security' ? '/security' : '/dashboard');
     } catch (e2) {
-      const m = e2.response?.data?.message || 'Login failed. Check your credentials.';
+      const status = e2.response?.status;
+      const m = status === 401
+        ? 'Email or password is incorrect. If you have not registered on this database yet, create an account first.'
+        : e2.response?.data?.message || (status >= 500 || e2.request
+          ? 'The sign-in service is unavailable. Make sure the backend and database are running, then try again.'
+          : 'Sign in could not be completed. Please check your account details and try again.');
       setErr(m); toast.error(m);
     } finally { setBusy(false); }
   };
@@ -74,7 +79,7 @@ export default function Login() {
         <motion.form onSubmit={submit} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} className="bg-white p-8 dark:bg-slate-900 sm:p-10">
           <p className="inline-flex items-center gap-1.5 rounded-full bg-navy-50 px-3 py-1 text-[11px] font-bold text-navy-700 dark:bg-navy-500/15 dark:text-cyan-200"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" /> SECURE SIGN-IN</p>
           <h1 className="font-display mt-3 text-3xl font-extrabold">Sign in</h1>
-          <p className="mt-1 text-sm text-slate-500">New here? <Link to="/register" className="group font-bold text-navy-600 dark:text-cyan-300">Create an account <ArrowRight size={13} className="inline transition-transform group-hover:translate-x-0.5" /></Link></p>
+          <p className="mt-1 text-sm text-slate-500">New here? <Link to={email.trim() ? `/register?email=${encodeURIComponent(email.trim())}` : '/register'} className="group font-bold text-navy-600 dark:text-cyan-300">Create an account <ArrowRight size={13} className="inline transition-transform group-hover:translate-x-0.5" /></Link></p>
           {err && <motion.p initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">{err}</motion.p>}
           <label className="label mt-6">Email</label>
           <input className="input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@campus.edu" autoComplete="email" />
