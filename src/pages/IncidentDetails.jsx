@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Phone, Loader2, MapPin, User, Clock, Send } from 'lucide-react';
-import api from '../services/api.js';
+import api, { getBackendOrigin } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 import { STATUSES, priorityColor, statusColor, formatDate } from '../utils/helpers.js';
@@ -60,7 +60,7 @@ export default function IncidentDetails() {
           </div>
         </div>
         <p className="mt-3 rounded-2xl bg-slate-50 p-4 text-sm leading-relaxed dark:bg-slate-800">{inc.description}</p>
-        {inc.imageUrl && <motion.img initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} src={inc.imageUrl.startsWith('http') ? inc.imageUrl : `${import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000'}${inc.imageUrl}`} alt="evidence" className="mt-3 max-h-80 w-full rounded-2xl border object-cover shadow-card" />}
+        {inc.imageUrl && <motion.img initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} src={inc.imageUrl.startsWith('http') ? inc.imageUrl : `${getBackendOrigin() || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : '')}${inc.imageUrl.startsWith('/') ? '' : '/'}${inc.imageUrl}`} alt="evidence" className="mt-3 max-h-80 w-full rounded-2xl border object-cover shadow-card" />}
         <div className="mt-4 grid gap-2.5 text-xs sm:grid-cols-3">
           <span className="flex items-center gap-1.5 rounded-xl bg-slate-50 px-3 py-2.5 dark:bg-slate-800"><User size={14} className="text-navy-500" /> Reporter: <b>{inc.reporter?.name || '—'}</b></span>
           {canManage && <span className="flex items-center gap-1.5 rounded-xl bg-slate-50 px-3 py-2.5 dark:bg-slate-800"><Phone size={14} className="text-green-600" /> {inc.contactNumber || inc.reporter?.phone || 'No contact'}</span>}
