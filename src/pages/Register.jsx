@@ -42,7 +42,7 @@ export default function Register() {
       nav(d.user.role === 'security' ? '/security' : '/dashboard');
     } catch (e2) {
       const m = e2.response?.data?.message || (e2.request
-        ? 'Cannot reach the CampusSafe API. Make sure the Spring Boot backend and PostgreSQL database are running, then try again.'
+        ? 'Cannot reach the CampusSafe API. Make sure the Spring Boot backend and database are running, then try again.'
         : 'Registration failed. Please try again.');
       setErr(m); toast.error(m);
     } finally { setBusy(false); }
