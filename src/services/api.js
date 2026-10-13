@@ -3,15 +3,18 @@ import axios from 'axios';
 // Normalize base URL so trailing slashes or omitted '/api' paths do not break requests in production
 export const getApiBaseUrl = () => {
   const raw = import.meta.env.VITE_API_URL;
-  if (!raw || typeof raw !== 'string' || !raw.trim()) {
-    return '/api';
+  if (raw && typeof raw === 'string' && raw.trim()) {
+    let trimmed = raw.trim().replace(/\/+$/, '');
+    if (trimmed.startsWith('http') && !trimmed.endsWith('/api')) {
+      trimmed = `${trimmed}/api`;
+    }
+    return trimmed;
   }
-  let trimmed = raw.trim().replace(/\/+$/, '');
-  // If backend host URL was supplied without '/api' (e.g. https://service.onrender.com), append '/api'
-  if (trimmed.startsWith('http') && !trimmed.endsWith('/api')) {
-    trimmed = `${trimmed}/api`;
+  // Automatic fallback when running on Vercel
+  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
+    return 'https://smart-campus-backend-3.onrender.com/api';
   }
-  return trimmed;
+  return '/api';
 };
 
 // Origin helper for uploaded assets / images
@@ -23,6 +26,9 @@ export const getBackendOrigin = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
   if (apiUrl && typeof apiUrl === 'string' && apiUrl.trim().startsWith('http')) {
     return apiUrl.trim().replace(/\/+$/, '').replace(/\/api$/, '');
+  }
+  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
+    return 'https://smart-campus-backend-3.onrender.com';
   }
   return '';
 };
